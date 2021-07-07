@@ -23,7 +23,7 @@ services:
     container_name: db
     restart: always
     volumes:
-      - ./mysql-data/:/var/lib/mysql/
+      - ./mysql-data/mysql/:/var/lib/mysql/
     environment:
       MYSQL_USER: test
       MYSQL_PASSWORD: test
