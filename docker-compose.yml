@@ -1,0 +1,44 @@
+version: "2.1"
+
+services:
+
+  flask:
+    build: ./tasks_flask
+    container_name: task_flask
+    restart: always
+    volumes:
+      - ./tasks_flask/migrations:/tasks_flask/migrations
+    environment:
+      - APP_NAME=FlaskApp
+      - FLASK_APP=main.py
+      - PYTHONPATH=/tasks_flask
+    expose:
+      - 8080
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql/mysql-server:8.0.23
+    container_name: db
+    restart: always
+    volumes:
+      - ./mysql-data/:/var/lib/mysql/
+    environment:
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+      MYSQL_DATABASE: tasks
+    ports:
+      - 3306:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+
+    depends_on:
+      - flask
